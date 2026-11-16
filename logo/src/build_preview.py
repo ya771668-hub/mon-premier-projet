@@ -38,6 +38,10 @@ DIRS = {
               pitch=["Le nom est le logo : KARIBU en Shrikhand, script gras et généreux, dont le I devient une brochette coiffée d’une flamme.",
                      "Style « street food » rétro et chaleureux : énergique, appétissant, mémorisable. Une vague rouge souligne le mot, comme la côte.",
                      "Force : enseigne et packaging très expressifs. Limite : l’icône (torche seule) est plus abstraite que celle de B."]),
+    "D": dict(name="Évolution du logo actuel", logo=dir_d, icon=d_icon,
+              pitch=["On garde ce que tes clients reconnaissent déjà : la flamme au centre, les 2 brochettes croisées, KARIBU en capitales serif or (Cinzel), la vague dans le A, BRAISE entre deux filets.",
+                     "On retire le palmier, les oiseaux, le volcan, l’arc, les piques et les dégradés, et les brochettes photo deviennent des formes pleines. Résultat : le même logo, en version pro et imprimable.",
+                     "Force : continuité totale avec l’enseigne actuelle, sans perdre la clientèle. Limite : la composition en X est plus large, donc l’icône est un peu moins compacte que le K de B."]),
 }
 
 
@@ -182,11 +186,15 @@ figcaption{{font-size:13px;color:var(--muted);padding:8px 12px;background:#fff}}
 <p>« Le feu de nos îles, le goût de l’Afrique. » : flamme + brochette, noir/or/rouge braise, une seule touche insulaire par direction. Tout est en aplats vectoriels (texte vectorisé, aucune image bitmap, aucun dégradé), et chaque version tient en 4 couleurs maximum.</p>
 <div class="pal">{palette}</div>
 </div></div>
-<nav><div class="wrap"><a href="#dir-A">A · Emblème</a><a href="#dir-B">B · Monogramme</a><a href="#dir-C">C · Logotype</a></div></nav>
+<nav><div class="wrap"><a href="#dir-A">A · Emblème</a><a href="#dir-B">B · Monogramme</a><a href="#dir-C">C · Logotype</a><a href="#dir-D">D · Évolution</a><a href="#actuel">Logo actuel</a></div></nav>
 <main class="wrap">
 {''.join(cards)}
+<section class="dir" id="actuel"><header><span class="tag">Référence</span><h2>Logo actuel : diagnostic</h2></header>
+<div class="grid3"><figure class="on-dark"><img src="../reference/logo-actuel.jpg" alt="Logo actuel Karibu Braise" style="display:block;width:100%"><figcaption>Logo actuel</figcaption></figure>
+<figure class="on-dark"><img src="../reference/logo-actuel.jpg" alt="Logo actuel en 32 px" style="display:block;width:32px;height:32px;margin:60px auto"><figcaption>Le même logo en 32 px : illisible</figcaption></figure>
+<div><ul class="pitch"><li><b>À garder :</b> flamme centrale, brochettes croisées, KARIBU serif or avec la vague dans le A, BRAISE rouge entre filets.</li><li><b>À retirer :</b> 11 éléments (palmier, oiseaux, volcan, vagues, arc, piques, photos), dégradés « effet IA », 2 slogans empilés.</li><li><b>Problème clé :</b> les brochettes photo ne peuvent être ni vectorisées, ni brodées, ni tamponnées.</li></ul></div></div></section>
 <section class="choice"><h2>À toi de choisir</h2>
-<p>Indique la direction retenue (A, B ou C), ou un mix (ex. : « le symbole de B avec la typo de C »). Je finaliserai ensuite le kit complet : logo empilé, horizontal, icône, versions blanc / noir / or, version avec slogan, PNG 512 / 1024 / 2048 et charte graphique.</p></section>
+<p>Indique la direction retenue (A, B, C ou D), ou un mix (ex. : « le symbole de B avec la typo de C »). Je finaliserai ensuite le kit complet : logo empilé, horizontal, icône, versions blanc / noir / or, version avec slogan, PNG 512 / 1024 / 2048 et charte graphique.</p></section>
 </main></body></html>"""
 open(f"{OUT}/preview.html", "w").write(page)
 print("ok", len(page) // 1024, "KB")

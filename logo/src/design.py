@@ -51,13 +51,13 @@ CORE = ("M50 44 C55 54 66 60 66 73 C66 84 59 90 50 90 C41 90 34 84 34 73 "
         "C34 65 38 61 42 57 C43 63 45 65 47 66 C46 58 47 51 50 44 Z")
 
 
-def skewer_parts(t, chunk_w=23, chunk_h=19, ys=(38, 59, 80), stick=(8, 102), sw=5.4, gap=3.6):
+def skewer_parts(t, chunk_w=23, chunk_h=19, ys=(38, 59, 80), stick=(8, 102), sw=5.4, gap=3.6, r=5.5):
     """Brochette verticale centrée x=50 puis transformée par t.
     Retourne (stick, [chunks], halo) en Paths."""
     st = P(rrect(50 - sw / 2, stick[0], sw, stick[1] - stick[0], sw / 2), t)
-    chunks = [P(rrect(50 - chunk_w / 2, y - chunk_h / 2, chunk_w, chunk_h, 5.5), t) for y in ys]
+    chunks = [P(rrect(50 - chunk_w / 2, y - chunk_h / 2, chunk_w, chunk_h, r), t) for y in ys]
     halo = union(P(rrect(50 - sw / 2 - gap, stick[0] - gap, sw + 2 * gap, stick[1] - stick[0] + 2 * gap, sw / 2 + gap), t),
-                 *[P(rrect(50 - chunk_w / 2 - gap, y - chunk_h / 2 - gap, chunk_w + 2 * gap, chunk_h + 2 * gap, 5.5 + gap), t) for y in ys])
+                 *[P(rrect(50 - chunk_w / 2 - gap, y - chunk_h / 2 - gap, chunk_w + 2 * gap, chunk_h + 2 * gap, r + gap), t) for y in ys])
     return st, chunks, halo
 
 
@@ -253,3 +253,65 @@ def c_icon(mode="dark"):
         out.append(("ring", diff(P(circle(50, 50, 50)), P(circle(50, 50, 46)))))
     out += torch_layers(compose(mat(0.47, 0.47, 50, 86)), chunk_w=50, flame_s=0.62, sw=12)
     return 100, 100, emit(out, th, mono)
+
+
+# ------------------------------------------------------------------ Direction D
+# Évolution du logo actuel : on garde sa structure (flamme centrale, 2 brochettes
+# croisées, KARIBU serif or avec la vague dans le A, BRAISE rouge entre filets),
+# mais en aplats simples. Touche insulaire : la vague du A (le volcan est retiré).
+CIN = "cinzel-latin-900-normal"
+
+
+def crossed_layers(t=(1, 0, 0, 1, 0, 0), ang=44, cx=50, cy=80):
+    kw = dict(chunk_w=15, chunk_h=13, ys=(16, 31, 46), stick=(6, 104), sw=4.2, gap=3.0, r=3.2)
+    s1, c1, h1 = skewer_parts(compose(rot(-ang, 50, cy), mat(1, 1, cx - 50, 0), t), **kw)
+    s2, c2, h2 = skewer_parts(compose(rot(ang, 50, cy), mat(1, 1, cx - 50, 0), t), **kw)
+    ft = compose(mat(0.74, 0.74, cx - 37, -1), t)
+    flame = diff(P(FLAME, ft), h1, h2)
+    core = diff(P(CORE, ft), h1, h2)
+    # la brochette 2 passe sous la 1 : on la coupe par le halo de la 1
+    s2 = diff(s2, h1)
+    c2 = [diff(c, h1) for c in c2]
+    out = [("flame", flame), ("core", core), ("stick", s2)]
+    out += [("veg" if i == 1 else "meat", c) for i, c in enumerate(c2)]
+    out += [("stick", s1)]
+    out += [("veg" if i == 1 else "meat", c) for i, c in enumerate(c1)]
+    return out
+
+
+def karibu_wave(x, y, size, anchor="middle"):
+    """KARIBU en Cinzel Black, avec la vague qui traverse le A (signature du logo actuel)."""
+    d, w = text_path(CIN, "KARIBU", size, x, y, tracking=0.04, anchor=anchor)
+    word = P(d)
+    x0 = x - w / 2 if anchor == "middle" else x
+    # vague à hauteur de la barre du A
+    _, wk = text_path(CIN, "K", size, 0, 0)
+    _, wa = text_path(CIN, "A", size, 0, 0)
+    ax = x0 + wk + 0.04 * size          # début du A
+    ww = wa * 1.25                       # la vague déborde un peu du A
+    wt = mat(ww / 108, 0.11 * size / 20, ax + wa / 2 - ww / 2, y - 0.33 * size)
+    wave = wave_path(wt, sw=0.11 * size / (0.11 * size / 20) / 2.2)
+    halo = wave_path(wt, sw=0.24 * size / (0.11 * size / 20) / 2.2)
+    return diff(word, halo), wave, w
+
+
+def dir_d(mode="dark"):
+    th, mono = theme(mode)
+    out = crossed_layers(mat(2.3, 2.3, 300 - 115, 20))
+    word, wave, w = karibu_wave(300, 370, 104)
+    out += [("word", word), ("accent", wave)]
+    d, bw = text_path(BC8, "BRAISE", 56, 300, 444, tracking=0.34, anchor="middle")
+    out.append(("sub", P(d)))
+    lw = 70
+    out.append(("ring", union(P(rrect(300 - bw / 2 - 24 - lw, 421, lw, 5, 2.5)),
+                              P(rrect(300 + bw / 2 + 24, 421, lw, 5, 2.5)))))
+    th = dict(th)
+    if not mono:
+        th["accent"] = C["rouge"]
+        th["sub"] = C["rouge"] if mode == "light" else C["orange"]
+    return 600, 470, emit(out, th, mono)
+
+
+def d_icon(mode="dark"):
+    th, mono = theme(mode)
+    return 100, 100, emit(crossed_layers(mat(0.92, 0.92, 4, 4)), th, mono)
